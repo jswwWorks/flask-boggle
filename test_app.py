@@ -34,17 +34,19 @@ class BoggleAppTestCase(TestCase):
         """Test starting a new game."""
 
         with app.test_client() as client:
-           response = client.post("/api/new-game")
-           response_dict = response.json
+            response = client.post("/api/new-game")
+            game_id = response.json["game_id"]
+            board = response.json["board"]
 
-           id = response_dict["gameId"]
-           board = response_dict["board"]
+            self.assertEqual(response.status_code, 200)
 
-           print("response (sconverted into a directory)", response_dict)
-           print("the id=", id, "the board=", board)
+            # should have string game id, and a list-of-lists for the board
+            self.assertIsInstance(game_id, str)
+            self.assertIsInstance(board, list)
+            self.assertIsInstance(board[0], list)
 
-           self.assertEqual(response.status_code, 200)
-           self.assertIsInstance(id, str)
-           self.assertIsInstance(board, list)
+            # check that game was added to games global dict
+            self.assertIn(game_id, games)
+
 
 

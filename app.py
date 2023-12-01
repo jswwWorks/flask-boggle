@@ -29,6 +29,36 @@ def new_game():
     # get a unique string id for the board we're creating
     game_id = str(uuid4())
     game = BoggleGame()
+
+    # add game to global games dictionary
     games[game_id] = game
 
-    return jsonify({"gameId": game_id, "board": game.board})
+    return jsonify({"game_id": game_id, "board": game.board})
+
+
+@app.post("/api/score-word")
+def score_word():
+    """Check if a word is legal. Post request should be json with game_id / word
+    Return a json with result key and value of not-word, not-on-board, or ok"""
+
+    game_id = request.json['game_id']
+    word = request.json['word']
+
+    game = games[game_id]
+
+    word_list = game.word_list
+    if not word_list.check_word(word):
+        result = 'not-word'
+
+    if not game.check_word_on_board(word):
+        result = 'not-on-board'
+
+    else:
+        result = 'ok'
+
+    return jsonify({"result": result})
+
+
+
+
+
