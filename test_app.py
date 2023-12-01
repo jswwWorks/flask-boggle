@@ -26,7 +26,8 @@ class BoggleAppTestCase(TestCase):
 
             # test that homepage loads and contains board and word form
             self.assertEqual(response.status_code, 200)
-            self.assertIn('<table class="board">', html)
+            self.assertIn("Comment for testing index.html opened", html)
+            self.assertIn('<table class="board', html)
             self.assertIn('<form id="newWordForm">', html)
 
     def test_api_new_game(self):
