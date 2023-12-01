@@ -48,5 +48,62 @@ class BoggleAppTestCase(TestCase):
             # check that game was added to games global dict
             self.assertIn(game_id, games)
 
+    def test_api_score_word(self):
+        """
+        Tests route from starting new game to checking word validity works.
+        Tests different outcomes of score_word (word doesn't exist, word isn't
+        on board, or word is valid & on Boggle board).
+        """
+
+        with app.test_client() as client:
+            new_game_response = client.post("/api/new-game")
+            game_id = new_game_response.json["game_id"]
+
+            # Grab specific game instance &
+            # Alter board to ensure 'CATCH' is a valid word in testing
+            game = games[game_id]
+            game.board[0] = ["C", "A", "T", "C", "H"]
+
+            print('game=', game, 'game.board=', game.board, "game_id=", game_id)
+
+            not_word_response = client.post(
+                "/api/score-word",
+                data={"word": "ANKJSNDKJBFSFSF", "game_id": game_id})
+
+            not_on_board_response = client.post(
+                "/api/score-word",
+                data={"word": "ZYZZYVA", "game_id": game_id})
+
+            # This response should result in 'ok'
+            ok_response = client.post(
+                "/api/score-word",
+                data={"word": "CATCH", "game_id": game_id})
+
+            # Check route status
+            self.assertEqual(ok_response.status_code, 200)
+            self.assertEqual(not_word_response.json, {"result": "not-word"})
+            self.assertEqual(
+                not_on_board_response.json, {"result": "not-on-board"})
+            self.assertEqual(ok_response.json, {"result": "not-word"})
+
+
+
+
+
+
+        # Relies on creating a new game, so we need to call/generate
+        # new game first using /api/new-game
+
+        # figure out how to alter letters on board before scoring
+        # also modifying arrays to make sure there is a word (last of tests)
+
+        # check that route to this section works
+
+        # 3 tests to include (at least):
+        # word doesn't exist
+        # word isn't on board
+        # word is a-ok
+
+
 
 
