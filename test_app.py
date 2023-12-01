@@ -22,8 +22,12 @@ class BoggleAppTestCase(TestCase):
 
         with app.test_client() as client:
             response = client.get('/')
-            ...
-            # test that you're getting a template
+            html = response.get_data(as_text=True)
+
+            # test that homepage loads and contains board and word form
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('<table class="board">', html)
+            self.assertIn('<form id="newWordForm">', html)
 
     def test_api_new_game(self):
         """Test starting a new game."""
