@@ -28,18 +28,17 @@ async function start() {
 function displayBoard(board) {
   // $table.empty();
   // loop over board and create the DOM tr/td structure
-  const $tableCells = $(".tableCell");
+  const $tableCells = $("td");
 
   let currentIndex = 0;
 
-  for (const row in board) {
-    for (const letter in row) {
+  for (const row of board) {
+    for (const letter of row) {
 
       // Grab specific td to attach to
       const $td = $tableCells.eq(currentIndex);
-
       // Attach letter to td object
-      $td.text(letter)
+      $td.text(letter);
 
       // Increment counter
       currentIndex++;
