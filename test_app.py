@@ -64,30 +64,33 @@ class BoggleAppTestCase(TestCase):
             # Grab specific game instance &
             # Alter board to ensure 'CATCH' is a valid word in testing
             game = games[game_id]
-            game.board[0] = ["C", "A", "T", "C", "H"]
+            game.board = [
+                ["C", "A", "T", "C", "H"],
+                ["C", "A", "T", "C", "H"],
+                ["C", "A", "T", "C", "H"],
+                ["C", "A", "T", "C", "H"],
+                ["C", "A", "T", "C", "H"]
+            ]
 
-            # send post to score-word for each outcome to test
+            # send post to score-word for each outcome to test status/outcomes
             not_word_response = client.post(
                 "/api/score-word",
                 json={"word": "ANKJSNDKJBFSFSF", "game_id": game_id})
 
+            self.assertEqual(not_word_response.status_code, 200)
+            self.assertEqual(not_word_response.json, {"result": "not-word"})
+
             not_on_board_response = client.post(
                 "/api/score-word",
-                json={"word": "ZYZZYVA", "game_id": game_id})
+                json={"word": "DOG", "game_id": game_id})
+
+            self.assertEqual(not_on_board_response.status_code, 200)
+            self.assertEqual(
+                not_on_board_response.json, {"result": "not-on-board"})
 
             ok_response = client.post(
                 "/api/score-word",
                 json={"word": "CATCH", "game_id": game_id})
 
-            # Check route statuses
-            self.assertEqual(not_word_response.status_code, 200)
-            self.assertEqual(not_on_board_response.status_code, 200)
             self.assertEqual(ok_response.status_code, 200)
-
-            # Check correct responses for given input
-            self.assertEqual(
-                not_word_response.json, {"result": "not-word"})
-            self.assertEqual(
-                not_on_board_response.json, {"result": "not-on-board"})
-            self.assertEqual(
-                ok_response.json, {"result": "ok"})
+            self.assertEqual(ok_response.json, {"result": "ok"})

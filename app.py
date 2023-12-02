@@ -39,7 +39,10 @@ def new_game():
 @app.post("/api/score-word")
 def score_word():
     """Check if a word is legal. Post request should be json with game_id / word
-    Return a json with result key and value of not-word, not-on-board, or ok"""
+    Return a json with result key and value of not-word, not-on-board, or ok
+    example:
+    recieved: {"game_id": dfjklhasldjf, "word": "CAT"}
+    return: {"result": "ok"}"""
 
     game_id = request.json['game_id']
     word = request.json['word']
@@ -47,6 +50,7 @@ def score_word():
     game = games[game_id]
 
     word_list = game.word_list
+
     if not word_list.check_word(word):
         result = 'not-word'
 
