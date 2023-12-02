@@ -56,6 +56,8 @@ class BoggleAppTestCase(TestCase):
         """
 
         with app.test_client() as client:
+
+            # create new game and get id
             new_game_response = client.post("/api/new-game")
             game_id = new_game_response.json["game_id"]
 
@@ -64,46 +66,28 @@ class BoggleAppTestCase(TestCase):
             game = games[game_id]
             game.board[0] = ["C", "A", "T", "C", "H"]
 
-            print('game=', game, 'game.board=', game.board, "game_id=", game_id)
-
+            # send post to score-word for each outcome to test
             not_word_response = client.post(
                 "/api/score-word",
-                data={"word": "ANKJSNDKJBFSFSF", "game_id": game_id})
+                json={"word": "ANKJSNDKJBFSFSF", "game_id": game_id})
 
             not_on_board_response = client.post(
                 "/api/score-word",
-                data={"word": "ZYZZYVA", "game_id": game_id})
+                json={"word": "ZYZZYVA", "game_id": game_id})
 
-            # This response should result in 'ok'
             ok_response = client.post(
                 "/api/score-word",
-                data={"word": "CATCH", "game_id": game_id})
+                json={"word": "CATCH", "game_id": game_id})
 
-            # Check route status
+            # Check route statuses
+            self.assertEqual(not_word_response.status_code, 200)
+            self.assertEqual(not_on_board_response.status_code, 200)
             self.assertEqual(ok_response.status_code, 200)
-            self.assertEqual(not_word_response.json, {"result": "not-word"})
+
+            # Check correct responses for given input
+            self.assertEqual(
+                not_word_response.json, {"result": "not-word"})
             self.assertEqual(
                 not_on_board_response.json, {"result": "not-on-board"})
-            self.assertEqual(ok_response.json, {"result": "not-word"})
-
-
-
-
-
-
-        # Relies on creating a new game, so we need to call/generate
-        # new game first using /api/new-game
-
-        # figure out how to alter letters on board before scoring
-        # also modifying arrays to make sure there is a word (last of tests)
-
-        # check that route to this section works
-
-        # 3 tests to include (at least):
-        # word doesn't exist
-        # word isn't on board
-        # word is a-ok
-
-
-
-
+            self.assertEqual(
+                ok_response.json, {"result": "ok"})

@@ -50,7 +50,7 @@ def score_word():
     if not word_list.check_word(word):
         result = 'not-word'
 
-    if not game.check_word_on_board(word):
+    elif not game.check_word_on_board(word):
         result = 'not-on-board'
 
     else:
